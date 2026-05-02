@@ -9,7 +9,7 @@ const App = () => {
   const [imageUrl, setImageUrl] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [showContract, setShowContract] = useState(false);
-  const apiKey = ""; 
+  const apiKey = process.env.REACT_APP_GOOGLE_API_KEY || ""; 
 
   // --- 師資陣容 (陳高生主任核心) ---
   const facultyData = {
@@ -214,7 +214,7 @@ const App = () => {
         <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-[#8e8e8e]/10 rounded-full blur-[150px]"></div>
       </div>
 
-      <div className="max-w-md w-full relative">
+      <div className="max-w-md w-full relative mx-auto">
         
         {stage === 'welcome' && (
           <div className="space-y-12 animate-in fade-in zoom-in duration-1000">
