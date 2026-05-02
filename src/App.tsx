@@ -153,7 +153,7 @@ const App = () => {
   };
 
   // --- 核心函數 ---
-  const handleChoice = (score, category) => {
+ const handleChoice = (score: number, category: string) => {
     setScores(prev => ({ ...prev, [category]: prev[category] + score }));
     if (currentCard < deck.length - 1) {
       setCurrentCard(prev => prev + 1);
