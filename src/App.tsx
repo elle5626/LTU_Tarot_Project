@@ -163,7 +163,7 @@ const App = () => {
     }
   };
 
-  const generateImage = async (prompt) => {
+ const generateImage = async (prompt) => {
   setIsLoading(true);
   setImageUrl('');
   let retries = 0;
