@@ -164,28 +164,43 @@ const App = () => {
   };
 
   const generateImage = async (prompt) => {
-    setIsLoading(true);
-    let retries = 0;
-    const maxRetries = 5;
-    const callApi = async () => {
-      try {
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=${apiKey}`, {
+  setIsLoading(true);
+  setImageUrl('');
+  let retries = 0;
+  const maxRetries = 3;
+  
+  const callApi = async () => {
+    try {
+      const response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-preview-image-generation:generateContent?key=${apiKey}`,
+        {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ instances: [{ prompt }], parameters: { sampleCount: 1 } })
-        });
-        const result = await response.json();
-        if (result.predictions?.[0]?.bytesBase64Encoded) {
-          setImageUrl(`data:image/png;base64,${result.predictions[0].bytesBase64Encoded}`);
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: prompt }] }],
+            generationConfig: { responseModalities: ["IMAGE", "TEXT"] }
+          })
         }
-      } catch (error) {
-        if (retries < maxRetries) {
-          retries++;
-          await new Promise(res => setTimeout(res, Math.pow(2, retries) * 1000));
-          return callApi();
-        }
-      } finally { setIsLoading(false); }
-    };
+      );
+      const result = await response.json();
+      const parts = result.candidates?.[0]?.content?.parts;
+      const imgPart = parts?.find((p) => p.inlineData);
+      if (imgPart) {
+        setImageUrl(`data:image/png;base64,${imgPart.inlineData.data}`);
+      }
+    } catch (error) {
+      if (retries < maxRetries) {
+        retries++;
+        await new Promise(res => setTimeout(res, Math.pow(2, retries) * 1000));
+        return callApi();
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+  await callApi();
+};
     await callApi();
   };
 
