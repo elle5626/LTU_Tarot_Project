@@ -201,9 +201,7 @@ const App = () => {
   
   await callApi();
 };
-    await callApi();
-  };
-
+   
   useEffect(() => {
     if (stage === 'quiz') {
       generateImage(deck[currentCard].prompt);
