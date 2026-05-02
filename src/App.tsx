@@ -10,7 +10,7 @@ const App = () => {
   const [imageUrl, setImageUrl] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [showContract, setShowContract] = useState(false);
-  const apiKey = process.env.REACT_APP_GOOGLE_API_KEY || ""; 
+ const apiKey = process.env.REACT_APP_GEMINI_KEY || ""; 
 
   // --- 師資陣容 (陳高生主任核心) ---
   const facultyData = {
