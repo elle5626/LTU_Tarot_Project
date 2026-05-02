@@ -1,29 +1,22 @@
 // @ts-nocheck
 import React, { useState, useEffect, useMemo } from "react";
 import {
-  Sparkles,
   Zap,
   ChevronRight,
   RefreshCcw,
   Loader2,
-  Star,
   ShieldCheck,
   Gem,
-  Quote,
   ExternalLink,
-  Layers,
   X,
   CheckCircle,
   Flame,
-  Heart,
-  User,
   GraduationCap,
   Award,
 } from "lucide-react";
 
 const App = () => {
-  // --- 狀態管理 ---
-  const [stage, setStage] = useState("welcome"); // welcome, quiz, result, faculty
+  const [stage, setStage] = useState("welcome");
   const [currentCard, setCurrentCard] = useState(0);
   const [scores, setScores] = useState({
     intuition: 0,
@@ -34,9 +27,8 @@ const App = () => {
   const [imageUrl, setImageUrl] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showContract, setShowContract] = useState(false);
-  const apiKey = process.env.REACT_APP_GOOGLE_API_KEY || "";
+  const apiKey = "";
 
-  // --- 實務師資陣容 (僅保留確認真人) ---
   const facultyData = {
     head: {
       name: "陳高生 主任",
@@ -64,7 +56,6 @@ const App = () => {
     ],
   };
 
-  // --- 七階占卜陣內容 ---
   const deck = [
     {
       id: 1,
@@ -205,20 +196,22 @@ const App = () => {
     },
   };
 
-  // --- 核心函數 ---
-  const handleChoice = (score: number, category: string) => {
+  const handleChoice = (score, category) => {
     setScores((prev) => ({ ...prev, [category]: prev[category] + score }));
     if (currentCard < deck.length - 1) {
       setCurrentCard((prev) => prev + 1);
+      setImageUrl("");
     } else {
       setStage("result");
+      setImageUrl("");
     }
   };
 
   const generateImage = async (prompt) => {
+    if (!apiKey) return;
     setIsLoading(true);
     let retries = 0;
-    const maxRetries = 5;
+    const maxRetries = 3;
     const callApi = async () => {
       try {
         const response = await fetch(
@@ -259,7 +252,7 @@ const App = () => {
     } else if (stage === "result") {
       const total =
         scores.intuition + scores.skill + scores.market + scores.empathy;
-      let final =
+      const final =
         total >= 16 ? results.high : total >= 10 ? results.mid : results.low;
       generateImage(final.prompt);
     }
@@ -274,397 +267,415 @@ const App = () => {
   }, [scores]);
 
   return (
-   <div className="min-h-screen w-full bg-[#050505] text-[#ccff00] flex flex-col items-center justify-center p-4 sm:p-6 font-mono overflow-x-hidden selection:bg-[#ccff00] selection:text-black relative">
-      {/* Hyper-Acid Background */}
-      <div className="fixed inset-0 -z-10">
-        <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-[#ccff00]/5 rounded-full blur-[200px] animate-pulse"></div>
-        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-[#7b2cbf]/10 rounded-full blur-[150px]"></div>
+    <div style={{ backgroundColor: "#050505", minHeight: "100vh", minHeight: "100dvh" }}
+      className="text-[#ccff00] font-mono overflow-x-hidden relative">
+
+      {/* Background blobs */}
+      <div className="fixed inset-0 pointer-events-none" style={{ zIndex: 0 }}>
+        <div className="absolute top-0 right-0 w-64 h-64 md:w-96 md:h-96 rounded-full"
+          style={{ background: "rgba(204,255,0,0.05)", filter: "blur(80px)" }} />
+        <div className="absolute bottom-0 left-0 w-48 h-48 md:w-72 md:h-72 rounded-full"
+          style={{ background: "rgba(123,44,191,0.1)", filter: "blur(80px)" }} />
       </div>
 
-     <div className="max-w-md w-full relative mx-auto flex-shrink-0">
-        {stage === "welcome" && (
-          <div className="space-y-12 animate-in fade-in zoom-in duration-1000">
-            <div className="relative bg-black border-[6px] border-[#ccff00] p-12 rounded-[4.5rem] shadow-[0_0_120px_rgba(204,255,0,0.15)] text-center space-y-10">
-              <div className="space-y-2 text-left">
-                <p className="text-[10px] font-black tracking-[1em] text-white/30 uppercase">
+      {/* Main container - properly centered */}
+      <div className="relative flex flex-col items-center justify-start w-full px-4 py-8" style={{ zIndex: 1 }}>
+        <div className="w-full" style={{ maxWidth: "448px" }}>
+
+          {/* ── WELCOME ── */}
+          {stage === "welcome" && (
+            <div className="space-y-6">
+              <div className="border-4 border-[#ccff00] p-6 rounded-3xl"
+                style={{ backgroundColor: "#000", boxShadow: "0 0 60px rgba(204,255,0,0.1)" }}>
+
+                <p className="text-xs font-black tracking-widest text-white/30 uppercase mb-1">
                   Future Oracle
                 </p>
-                <h1 className="text-4xl font-black italic tracking-tighter uppercase leading-none">
-                  嶺東科大流設系
-                  <br />
-                  <span className="text-white text-5xl drop-shadow-[0_0_20px_#ccff00]">
-                    算出未來
-                  </span>
+                <h1 className="text-3xl font-black italic tracking-tighter uppercase leading-tight mb-6">
+                  嶺東科大流設系<br />
+                  <span className="text-white text-4xl">算出未來</span>
                 </h1>
-              </div>
 
-              <div className="relative h-72 border-2 border-white/5 rounded-[3rem] overflow-hidden bg-zinc-950 group">
-                <img
-                  src="https://images.unsplash.com/photo-1558507652-2d9626c4e67a?auto=format&fit=crop&q=80&w=800"
-                  className="w-full h-full object-cover grayscale brightness-125 contrast-125 group-hover:grayscale-0 transition-all duration-1000"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent flex items-end p-8 text-left">
-                  <p className="text-[#ccff00] text-xs font-black tracking-[0.5em] italic leading-tight">
-                    #與主任同行
-                    <br />
-                    #美力就是武器
-                  </p>
+                <div className="relative rounded-2xl overflow-hidden mb-6" style={{ height: "240px" }}>
+                  <img
+                    src="https://images.unsplash.com/photo-1558507652-2d9626c4e67a?auto=format&fit=crop&q=80&w=800"
+                    className="w-full h-full object-cover"
+                    style={{ filter: "grayscale(1) brightness(1.2) contrast(1.2)" }}
+                    alt="LTU Fashion"
+                  />
+                  <div className="absolute inset-0 flex items-end p-4"
+                    style={{ background: "linear-gradient(to top, #000 0%, transparent 60%)" }}>
+                    <p className="text-[#ccff00] text-xs font-black tracking-wider italic leading-tight">
+                      #與主任同行<br />#美力就是武器
+                    </p>
+                  </div>
                 </div>
-              </div>
 
-              <div className="space-y-8">
-                <p className="text-xs text-white/50 leading-relaxed font-bold italic px-4">
-                  「這不只是測驗，這是妳與職人靈魂的契約。
-                  <br />
+                <p className="text-xs text-white/50 leading-relaxed font-bold italic text-center mb-6 px-2">
+                  「這不只是測驗，這是妳與職人靈魂的契約。<br />
                   妳的天賦，將由最頂尖的大師團隊磨練。」
                 </p>
+
                 <button
                   onClick={() => setStage("quiz")}
-                  className="w-full py-6 bg-[#ccff00] text-black rounded-full font-black text-2xl hover:shadow-[0_0_60px_rgba(204,255,0,0.5)] hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-4 group"
-                >
-                  啟動七階占卜 <Zap fill="currentColor" />
+                  className="w-full flex items-center justify-center gap-3 font-black text-xl text-black rounded-full transition-all active:scale-95"
+                  style={{
+                    backgroundColor: "#ccff00",
+                    padding: "18px 24px",
+                    boxShadow: "0 0 30px rgba(204,255,0,0.3)"
+                  }}>
+                  啟動七階占卜 <Zap size={20} fill="currentColor" />
                 </button>
               </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {stage === "quiz" && (
-          <div className="bg-black border-2 border-white/10 rounded-[4rem] p-8 space-y-8 shadow-2xl relative overflow-hidden text-center">
-            <div className="flex justify-between items-end px-4">
-              <div className="flex flex-col text-left">
-                <span className="text-[10px] font-black text-[#ccff00] tracking-widest uppercase opacity-60">
-                  Chapter 0{currentCard + 1}
-                </span>
-                <span className="text-[14px] font-black text-white italic uppercase tracking-tighter">
-                  {deck[currentCard].cardName}
-                </span>
-              </div>
-              <div className="flex gap-1.5 pb-1">
-                {deck.map((_, i) => (
-                  <div
-                    key={i}
-                    className={`h-1 w-4 transition-all ${
-                      i <= currentCard
-                        ? "bg-[#ccff00] shadow-[0_0_8px_#ccff00]"
-                        : "bg-white/10"
-                    }`}
-                  ></div>
-                ))}
-              </div>
-            </div>
+          {/* ── QUIZ ── */}
+          {stage === "quiz" && (
+            <div className="border border-white/10 rounded-3xl p-5 space-y-5"
+              style={{ backgroundColor: "#000" }}>
 
-            <div className="relative aspect-[3/4.2] rounded-[3rem] overflow-hidden bg-zinc-950 border border-white/5 flex items-center justify-center group shadow-inner mx-auto">
-              {isLoading ? (
-                <div className="flex flex-col items-center gap-6">
-                  <Loader2 className="w-14 h-14 text-[#ccff00] animate-spin" />
-                  <p className="text-[10px] font-black text-[#ccff00] animate-pulse tracking-[0.6em]">
-                    召喚分鏡中...
+              {/* Header */}
+              <div className="flex justify-between items-center">
+                <div>
+                  <p className="text-xs font-black text-[#ccff00] tracking-widest uppercase opacity-60">
+                    Chapter 0{currentCard + 1}
+                  </p>
+                  <p className="text-sm font-black text-white italic uppercase tracking-tight">
+                    {deck[currentCard].cardName}
                   </p>
                 </div>
-              ) : (
-                imageUrl && (
-                  <img
-                    src={imageUrl}
-                    alt="Tarot Card"
-                    className="w-full h-full object-cover animate-in fade-in duration-1000 group-hover:scale-105 transition-transform duration-[4s]"
-                  />
-                )
-              )}
-
-              <div className="absolute top-0 left-0 w-full p-6 text-left">
-                <h2 className="text-sm font-black bg-[#ccff00] text-black px-4 py-1.5 inline-block skew-x-[-15deg] shadow-xl uppercase italic">
-                  {deck[currentCard].title}
-                </h2>
+                <div className="flex gap-1">
+                  {deck.map((_, i) => (
+                    <div key={i} className="h-1 w-4 rounded-full transition-all"
+                      style={{ backgroundColor: i <= currentCard ? "#ccff00" : "rgba(255,255,255,0.1)" }} />
+                  ))}
+                </div>
               </div>
-            </div>
 
-            <div className="space-y-6">
-              <p className="text-xs text-center font-bold text-white/60 italic leading-relaxed px-4 min-h-[40px]">
+              {/* Card image */}
+              <div className="relative rounded-2xl overflow-hidden flex items-center justify-center"
+                style={{ aspectRatio: "3/4", backgroundColor: "#111", maxHeight: "320px" }}>
+                {isLoading ? (
+                  <div className="flex flex-col items-center gap-3">
+                    <Loader2 className="w-10 h-10 text-[#ccff00] animate-spin" />
+                    <p className="text-xs font-black text-[#ccff00] tracking-widest animate-pulse">
+                      召喚分鏡中...
+                    </p>
+                  </div>
+                ) : imageUrl ? (
+                  <img src={imageUrl} alt="Tarot Card"
+                    className="w-full h-full object-cover" />
+                ) : (
+                  <div className="flex flex-col items-center gap-3 opacity-30">
+                    <Gem size={40} className="text-[#ccff00]" />
+                  </div>
+                )}
+                <div className="absolute top-0 left-0 p-4">
+                  <span className="text-xs font-black text-black px-3 py-1 inline-block"
+                    style={{
+                      backgroundColor: "#ccff00",
+                      transform: "skewX(-10deg)",
+                      borderRadius: "4px"
+                    }}>
+                    {deck[currentCard].title}
+                  </span>
+                </div>
+              </div>
+
+              {/* Question */}
+              <p className="text-xs text-white/60 font-bold italic leading-relaxed text-center px-2">
                 「{deck[currentCard].description}」
               </p>
-              <div className="space-y-3">
+
+              {/* Options */}
+              <div className="space-y-2">
                 {deck[currentCard].options.map((opt, i) => (
                   <button
                     key={i}
                     disabled={isLoading}
-                    onClick={() =>
-                      handleChoice(opt.score, deck[currentCard].category)
-                    }
-                    className="w-full p-5 text-left border border-white/10 bg-white/5 rounded-2xl font-bold text-sm text-white/70 hover:border-[#ccff00] hover:bg-[#ccff00]/5 hover:text-white transition-all flex items-center justify-between group disabled:opacity-30 active:scale-[0.98]"
-                  >
-                    <span className="flex-1 pr-4">{opt.text}</span>
-                    <ChevronRight
-                      size={16}
-                      className="text-[#ccff00]/20 group-hover:text-[#ccff00] group-hover:translate-x-1 transition-all"
-                    />
+                    onClick={() => handleChoice(opt.score, deck[currentCard].category)}
+                    className="w-full text-left border rounded-xl font-bold text-sm text-white/70 flex items-center justify-between transition-all active:scale-95 disabled:opacity-30"
+                    style={{
+                      padding: "14px 16px",
+                      borderColor: "rgba(255,255,255,0.1)",
+                      backgroundColor: "rgba(255,255,255,0.03)"
+                    }}
+                    onMouseEnter={e => {
+                      e.currentTarget.style.borderColor = "#ccff00";
+                      e.currentTarget.style.backgroundColor = "rgba(204,255,0,0.05)";
+                    }}
+                    onMouseLeave={e => {
+                      e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)";
+                      e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.03)";
+                    }}>
+                    <span className="flex-1 pr-3 leading-snug">{opt.text}</span>
+                    <ChevronRight size={16} className="text-[#ccff00] flex-shrink-0" />
                   </button>
                 ))}
               </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {stage === "result" && (
-          <div className="space-y-8 animate-in zoom-in-95 duration-1000 relative">
-            <div className="bg-black border-[8px] border-[#ccff00] rounded-[5rem] p-10 shadow-[0_0_150px_rgba(204,255,0,0.3)] text-center space-y-10 overflow-hidden relative">
-              <div className="space-y-3 relative z-10">
-                <div className="inline-flex items-center gap-2 px-4 py-1 bg-white/5 rounded-full border border-white/10 mb-2">
-                  <Gem size={12} className="text-[#ccff00] animate-bounce" />
-                  <span className="text-[10px] font-black text-white/60 tracking-[0.5em] uppercase">
-                    Fate Decoded
-                  </span>
-                </div>
-                <h2 className="text-4xl font-black text-white italic tracking-tighter uppercase leading-none drop-shadow-[0_0_30px_#ccff00]">
-                  {finalResult.title}
-                </h2>
-              </div>
+          {/* ── RESULT ── */}
+          {stage === "result" && (
+            <div className="space-y-5">
+              <div className="border-4 border-[#ccff00] rounded-3xl p-6 space-y-6 text-center"
+                style={{ backgroundColor: "#000", boxShadow: "0 0 80px rgba(204,255,0,0.2)" }}>
 
-              <div className="relative aspect-[3/4.2] rounded-[3.5rem] overflow-hidden border-2 border-white/10 shadow-2xl group mx-auto max-w-[300px]">
-                {isLoading ? (
-                  <div className="w-full h-full flex flex-col items-center justify-center bg-zinc-950">
-                    <Loader2 className="w-14 h-14 text-[#ccff00] animate-spin mb-4" />
-                    <p className="text-[10px] font-black text-[#ccff00] tracking-widest uppercase italic">
-                      預見未來中...
-                    </p>
-                  </div>
-                ) : (
-                  imageUrl && (
-                    <img
-                      src={imageUrl}
-                      alt="Result Card"
-                      className="w-full h-full object-cover animate-in zoom-in duration-1000 group-hover:scale-110 transition-transform duration-[6s]"
-                    />
-                  )
-                )}
-              </div>
-
-              <div className="text-left space-y-10 relative z-10 pt-4">
-                <div className="p-10 bg-[#ccff00]/5 border-l-[16px] border-[#ccff00] rounded-r-[3rem] shadow-inner relative overflow-hidden">
-                  <div className="absolute top-0 right-10 transform -translate-y-1/2 bg-black px-6 py-2 border border-[#ccff00] text-[#ccff00] text-[10px] font-black tracking-widest uppercase">
-                    系主任良語
-                  </div>
-                  <div className="flex items-center gap-3 mb-6 opacity-60">
-                    <ShieldCheck size={24} className="text-[#ccff00]" />
-                    <span className="text-xs font-black tracking-[0.2em] text-white italic uppercase">
-                      Dean's Professional Insight
+                <div className="space-y-2">
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/10"
+                    style={{ backgroundColor: "rgba(255,255,255,0.05)" }}>
+                    <Gem size={10} className="text-[#ccff00]" />
+                    <span className="text-xs font-black text-white/60 tracking-widest uppercase">
+                      Fate Decoded
                     </span>
                   </div>
-                  <p className="text-[15px] font-black leading-relaxed text-white italic mb-8 border-b border-white/10 pb-6 text-center">
+                  <h2 className="text-2xl font-black text-white italic tracking-tight uppercase leading-tight">
+                    {finalResult.title}
+                  </h2>
+                </div>
+
+                {/* Result image */}
+                <div className="relative rounded-2xl overflow-hidden mx-auto"
+                  style={{ aspectRatio: "3/4", maxWidth: "240px", backgroundColor: "#111" }}>
+                  {isLoading ? (
+                    <div className="w-full h-full flex flex-col items-center justify-center">
+                      <Loader2 className="w-10 h-10 text-[#ccff00] animate-spin mb-3" />
+                      <p className="text-xs font-black text-[#ccff00] tracking-widest uppercase italic">
+                        預見未來中...
+                      </p>
+                    </div>
+                  ) : imageUrl ? (
+                    <img src={imageUrl} alt="Result" className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center opacity-20">
+                      <Gem size={48} className="text-[#ccff00]" />
+                    </div>
+                  )}
+                </div>
+
+                {/* Dean's advice */}
+                <div className="text-left p-5 rounded-2xl border-l-4 border-[#ccff00]"
+                  style={{ backgroundColor: "rgba(204,255,0,0.05)" }}>
+                  <div className="flex items-center gap-2 mb-3 opacity-60">
+                    <ShieldCheck size={16} className="text-[#ccff00]" />
+                    <span className="text-xs font-black text-white italic uppercase tracking-wider">
+                      系主任良語
+                    </span>
+                  </div>
+                  <p className="text-sm font-black text-white italic leading-relaxed mb-3">
                     「{finalResult.advice}」
                   </p>
-                  <p className="text-[12px] text-white/40 leading-relaxed font-bold italic">
+                  <p className="text-xs text-white/40 leading-relaxed font-bold italic">
                     {finalResult.desc}
                   </p>
                 </div>
-              </div>
 
-              <div className="pt-10 space-y-6">
-                <button
-                  onClick={() => setStage("faculty")}
-                  className="w-full py-8 bg-[#ccff00] text-black rounded-full font-black text-2xl shadow-[0_25px_70px_rgba(204,255,0,0.4)] hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-4 group"
-                >
-                  認識嶺東流設團隊{" "}
-                  <ChevronRight
-                    size={24}
-                    className="group-hover:translate-x-2 transition-transform"
-                  />
-                </button>
-                <button
-                  onClick={() => {
-                    setStage("welcome");
-                    setCurrentCard(0);
-                    setScores({
-                      intuition: 0,
-                      skill: 0,
-                      market: 0,
-                      empathy: 0,
-                    });
-                  }}
-                  className="text-[10px] font-black text-white/20 uppercase tracking-[1em] flex items-center justify-center gap-3 w-full hover:text-white transition-colors"
-                >
-                  <RefreshCcw size={14} /> Rewrite Destiny
-                </button>
+                {/* Actions */}
+                <div className="space-y-3 pt-2">
+                  <button
+                    onClick={() => setStage("faculty")}
+                    className="w-full flex items-center justify-center gap-3 font-black text-lg text-black rounded-full transition-all active:scale-95"
+                    style={{
+                      backgroundColor: "#ccff00",
+                      padding: "18px 24px",
+                      boxShadow: "0 10px 40px rgba(204,255,0,0.3)"
+                    }}>
+                    認識嶺東流設團隊
+                    <ChevronRight size={20} />
+                  </button>
+                  <button
+                    onClick={() => {
+                      setStage("welcome");
+                      setCurrentCard(0);
+                      setImageUrl("");
+                      setScores({ intuition: 0, skill: 0, market: 0, empathy: 0 });
+                    }}
+                    className="w-full flex items-center justify-center gap-2 text-xs font-black text-white/20 uppercase tracking-widest transition-colors"
+                    style={{ padding: "12px" }}>
+                    <RefreshCcw size={12} /> Rewrite Destiny
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* --- 師資版面 (修正版) --- */}
-        {stage === "faculty" && (
-          <div className="space-y-8 animate-in slide-in-from-right duration-700">
-            <div className="bg-black border-[4px] border-[#ccff00] rounded-[4rem] p-8 shadow-2xl space-y-8">
-              <div className="text-center space-y-2">
-                <GraduationCap className="w-12 h-12 text-[#ccff00] mx-auto mb-2" />
-                <h2 className="text-3xl font-black text-white italic tracking-tighter uppercase">
+          {/* ── FACULTY ── */}
+          {stage === "faculty" && (
+            <div className="border-4 border-[#ccff00] rounded-3xl p-6 space-y-6"
+              style={{ backgroundColor: "#000" }}>
+
+              <div className="text-center space-y-1">
+                <GraduationCap className="w-10 h-10 text-[#ccff00] mx-auto" />
+                <h2 className="text-2xl font-black text-white italic tracking-tight uppercase">
                   領航導師群
                 </h2>
-                <p className="text-[10px] font-bold text-purple-400 tracking-widest uppercase tracking-widest">
+                <p className="text-xs font-bold text-purple-400 tracking-widest uppercase">
                   Faculty of LTU Fashion Design
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 gap-4 max-h-[480px] overflow-y-auto pr-2 custom-scrollbar">
-                {/* 陳高生主任 (置頂特別展示) */}
-                <div className="p-8 bg-[#ccff00]/10 border-2 border-[#ccff00] rounded-[3rem] shadow-lg relative overflow-hidden group">
-                  <div className="absolute -top-4 -right-4 w-20 h-20 bg-[#ccff00]/10 blur-2xl rounded-full"></div>
-                  <div className="flex justify-between items-start mb-4">
-                    <div className="space-y-1 text-left">
-                      <h4 className="text-2xl font-black text-[#ccff00]">
-                        {facultyData.head.name}
-                      </h4>
-                      <p className="text-[10px] font-black text-white uppercase tracking-widest">
-                        {facultyData.head.title}
-                      </p>
+              <div className="space-y-3">
+                {/* Head */}
+                <div className="p-5 rounded-2xl border-2 border-[#ccff00]"
+                  style={{ backgroundColor: "rgba(204,255,0,0.08)" }}>
+                  <div className="flex justify-between items-start mb-3">
+                    <div>
+                      <h4 className="text-xl font-black text-[#ccff00]">{facultyData.head.name}</h4>
+                      <p className="text-xs font-black text-white uppercase tracking-wider">{facultyData.head.title}</p>
                     </div>
-                    <Award className="text-[#ccff00]" />
+                    <Award className="text-[#ccff00]" size={20} />
                   </div>
-                  <p className="text-[11px] font-black text-black bg-[#ccff00] px-4 py-1.5 rounded-full inline-block mb-4 italic">
+                  <span className="text-xs font-black text-black px-3 py-1 rounded-full inline-block mb-3 italic"
+                    style={{ backgroundColor: "#ccff00" }}>
                     核心專長：{facultyData.head.skill}
-                  </p>
-                  <p className="text-[11px] text-white/70 leading-relaxed text-left italic font-bold">
+                  </span>
+                  <p className="text-xs text-white/70 leading-relaxed italic font-bold">
                     {facultyData.head.desc}
                   </p>
                 </div>
 
-                {/* 其他領域大師描述 */}
+                {/* Mentors */}
                 {facultyData.mentors.map((mentor, i) => (
-                  <div
-                    key={i}
-                    className="p-6 bg-white/5 border border-white/10 rounded-3xl group hover:border-purple-500 transition-colors"
-                  >
-                    <div className="flex items-center gap-3 mb-3">
-                      <ShieldCheck className="text-purple-400 group-hover:text-[#ccff00]" />
-                      <h4 className="text-sm font-black text-white/90 uppercase tracking-widest">
-                        {mentor.field}
-                      </h4>
+                  <div key={i} className="p-4 rounded-2xl border border-white/10"
+                    style={{ backgroundColor: "rgba(255,255,255,0.03)" }}>
+                    <div className="flex items-center gap-2 mb-2">
+                      <ShieldCheck size={14} className="text-purple-400" />
+                      <h4 className="text-xs font-black text-white/90 uppercase tracking-wider">{mentor.field}</h4>
                     </div>
-                    <p className="text-[10px] text-white/40 leading-relaxed text-left italic">
-                      {mentor.desc}
-                    </p>
+                    <p className="text-xs text-white/40 leading-relaxed italic">{mentor.desc}</p>
                   </div>
                 ))}
               </div>
 
-              <div className="pt-6 space-y-4">
+              <div className="space-y-3 pt-2">
                 <button
                   onClick={() => setShowContract(true)}
-                  className="w-full py-6 bg-[#ccff00] text-black rounded-3xl font-black text-xl hover:scale-105 transition-all shadow-[0_15px_40px_rgba(204,255,0,0.3)]"
-                >
+                  className="w-full font-black text-lg text-black rounded-2xl transition-all active:scale-95"
+                  style={{
+                    backgroundColor: "#ccff00",
+                    padding: "18px 24px",
+                    boxShadow: "0 10px 30px rgba(204,255,0,0.25)"
+                  }}>
                   領取妳的職人契約
                 </button>
                 <button
                   onClick={() => setStage("result")}
-                  className="w-full py-4 text-white/20 font-bold hover:text-white transition-colors"
-                >
+                  className="w-full font-bold text-white/20 transition-colors"
+                  style={{ padding: "12px" }}>
                   返回測驗結果
                 </button>
               </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* --- 數位契約彈窗 (置於最外層) --- */}
-        {showContract && (
-          <div className="fixed inset-0 z-[9999] flex items-center justify-center p-6 animate-in fade-in duration-300">
-            <div
-              className="absolute inset-0 bg-black/95 backdrop-blur-md"
-              onClick={() => setShowContract(false)}
-            ></div>
-            <div className="relative w-full max-w-sm bg-[#0a0a0a] border-4 border-[#ccff00] rounded-[3.5rem] p-10 shadow-[0_0_120px_rgba(204,255,0,0.7)] space-y-8 animate-in zoom-in-95 duration-500 overflow-hidden">
-              <div className="absolute top-0 left-0 w-full h-2.5 bg-gradient-to-r from-[#ccff00] via-purple-600 to-transparent"></div>
+        </div>
 
-              <div className="flex justify-between items-start">
-                <div className="space-y-1 text-left">
-                  <p className="text-[9px] font-black text-[#ccff00] tracking-[0.3em] uppercase italic opacity-60">
-                    Admission Protocol
-                  </p>
-                  <h3 className="text-2xl font-black text-white uppercase italic tracking-tighter leading-none">
-                    {finalResult.contractTitle}
-                  </h3>
-                </div>
-                <button
-                  onClick={() => setShowContract(false)}
-                  className="text-white/20 hover:text-[#ccff00] transition-colors p-1.5"
-                >
-                  <X size={30} />
-                </button>
-              </div>
-
-              <div className="space-y-6 py-8 border-y border-white/10 text-left">
-                <div className="space-y-3">
-                  <p className="text-[10px] text-white/40 uppercase font-black italic tracking-widest">
-                    被保證人 / PROTAGONIST
-                  </p>
-                  <div className="p-6 bg-[#ccff00]/10 rounded-[2rem] border border-[#ccff00]/25 text-[#ccff00] font-black text-2xl italic tracking-tighter shadow-inner text-center">
-                    {finalResult.title}
-                  </div>
-                </div>
-
-                <div className="space-y-5">
-                  <p className="text-[10px] text-white/40 uppercase font-black tracking-widest italic opacity-60">
-                    保證條款 / LTU ELITE GUARANTEE
-                  </p>
-                  <div className="flex gap-4 items-start">
-                    <CheckCircle className="text-[#ccff00] shrink-0 w-6 h-6 mt-0.5 animate-pulse" />
-                    <p className="text-sm text-white/95 leading-relaxed font-bold italic">
-                      {finalResult.guarantee}
-                    </p>
-                  </div>
-                  <div className="flex gap-4 items-start">
-                    <CheckCircle className="text-[#ccff00] shrink-0 w-6 h-6 mt-0.5" />
-                    <p className="text-sm text-white/95 leading-relaxed font-bold italic">
-                      由陳高生主任與團隊親自領航，將妳的審美天賦轉化為不可撼動的產值護城河。
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="pt-6 text-center space-y-8">
-                <div className="flex flex-col items-center gap-3 opacity-30 group">
-                  <Flame className="w-14 h-14 text-[#ccff00]" />
-                  <p className="text-[9px] font-black text-white tracking-[0.6em] uppercase leading-none">
-                    嶺東流設 // 專業導航
-                  </p>
-                </div>
-                <button
-                  onClick={() =>
-                    window.open(
-                      "https://fashion.ltu.edu.tw/p/412-1018-1319.php?Lang=zh-tw",
-                      "_blank"
-                    )
-                  }
-                  className="w-full py-6.5 bg-white text-black rounded-3xl font-black text-xl shadow-[0_15px_45px_rgba(255,255,255,0.25)] hover:bg-[#ccff00] transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-2"
-                >
-                  前往官網尋求主任輔導 <ExternalLink size={18} />
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
+        {/* Footer */}
+        <p className="mt-12 text-xs font-black text-white/5 uppercase tracking-widest text-center">
+          LTU FASHION DESIGN // THE SUPREME AESTHETIC CODE
+        </p>
       </div>
 
-      <style
-        dangerouslySetInnerHTML={{
-          __html: `
-        @keyframes spin-slow {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-        .animate-spin-slow {
-            animation: spin-slow 20s linear infinite;
-        }
-        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #ccff00; border-radius: 10px; }
-        body { background-color: #050505; overscroll-behavior: none; }
-      `,
-        }}
-      />
+      {/* ── CONTRACT MODAL ── */}
+      {showContract && (
+        <div className="fixed inset-0 flex items-end sm:items-center justify-center p-0 sm:p-6"
+          style={{ zIndex: 9999, backgroundColor: "rgba(0,0,0,0.95)", backdropFilter: "blur(8px)" }}
+          onClick={() => setShowContract(false)}>
+          <div
+            className="relative w-full sm:max-w-sm rounded-t-3xl sm:rounded-3xl p-6 sm:p-8 space-y-5 overflow-hidden"
+            style={{
+              backgroundColor: "#0a0a0a",
+              border: "3px solid #ccff00",
+              boxShadow: "0 0 80px rgba(204,255,0,0.5)",
+              maxHeight: "90vh",
+              overflowY: "auto"
+            }}
+            onClick={e => e.stopPropagation()}>
 
-      <footer className="mt-16 text-[10px] font-black tracking-[3.1em] text-white/5 uppercase text-center animate-pulse">
-        LTU FASHION DESIGN // THE SUPREME AESTHETIC CODE
-      </footer>
+            {/* Top bar */}
+            <div className="absolute top-0 left-0 w-full h-2"
+              style={{ background: "linear-gradient(to right, #ccff00, #7b2cbf, transparent)" }} />
+
+            <div className="flex justify-between items-start">
+              <div>
+                <p className="text-xs font-black text-[#ccff00] tracking-widest uppercase italic opacity-60 mb-1">
+                  Admission Protocol
+                </p>
+                <h3 className="text-xl font-black text-white uppercase italic tracking-tight leading-tight">
+                  {finalResult.contractTitle}
+                </h3>
+              </div>
+              <button onClick={() => setShowContract(false)}
+                className="text-white/20 p-1" style={{ touchAction: "manipulation" }}>
+                <X size={24} />
+              </button>
+            </div>
+
+            <div className="space-y-4 py-4 border-y border-white/10">
+              <div className="space-y-2">
+                <p className="text-xs text-white/40 uppercase font-black italic tracking-widest">
+                  被保證人 / PROTAGONIST
+                </p>
+                <div className="p-4 rounded-2xl border border-[#ccff00]/25 text-[#ccff00] font-black text-xl italic tracking-tight text-center"
+                  style={{ backgroundColor: "rgba(204,255,0,0.1)" }}>
+                  {finalResult.title}
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <p className="text-xs text-white/40 uppercase font-black tracking-widest italic opacity-60">
+                  保證條款 / LTU ELITE GUARANTEE
+                </p>
+                <div className="flex gap-3 items-start">
+                  <CheckCircle className="text-[#ccff00] flex-shrink-0 w-5 h-5 mt-0.5" />
+                  <p className="text-sm text-white/95 leading-relaxed font-bold italic">
+                    {finalResult.guarantee}
+                  </p>
+                </div>
+                <div className="flex gap-3 items-start">
+                  <CheckCircle className="text-[#ccff00] flex-shrink-0 w-5 h-5 mt-0.5" />
+                  <p className="text-sm text-white/95 leading-relaxed font-bold italic">
+                    由陳高生主任與團隊親自領航，將妳的審美天賦轉化為不可撼動的產值護城河。
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="text-center space-y-4">
+              <div className="flex flex-col items-center gap-2 opacity-20">
+                <Flame className="w-10 h-10 text-[#ccff00]" />
+                <p className="text-xs font-black text-white tracking-widest uppercase">
+                  嶺東流設 // 專業導航
+                </p>
+              </div>
+              <button
+                onClick={() => window.open("https://fashion.ltu.edu.tw/p/412-1018-1319.php?Lang=zh-tw", "_blank")}
+                className="w-full flex items-center justify-center gap-2 font-black text-lg text-black rounded-2xl transition-all active:scale-95"
+                style={{
+                  backgroundColor: "white",
+                  padding: "16px 24px",
+                  touchAction: "manipulation"
+                }}>
+                前往官網尋求主任輔導 <ExternalLink size={16} />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <style dangerouslySetInnerHTML={{ __html: `
+        * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
+        body { background-color: #050505; overscroll-behavior: none; margin: 0; }
+        html { scroll-behavior: smooth; }
+        .custom-scrollbar::-webkit-scrollbar { width: 3px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #ccff00; border-radius: 10px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .animate-spin { animation: spin 1s linear infinite; }
+        .animate-pulse { animation: pulse 2s ease-in-out infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+      `}} />
     </div>
   );
 };
