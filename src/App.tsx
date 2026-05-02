@@ -274,14 +274,14 @@ const App = () => {
   }, [scores]);
 
   return (
-    <div className="min-h-screen bg-[#050505] text-[#ccff00] flex flex-col items-center justify-center p-6 font-mono overflow-x-hidden selection:bg-[#ccff00] selection:text-black relative">
+   <div className="min-h-screen w-full bg-[#050505] text-[#ccff00] flex flex-col items-center justify-center p-4 sm:p-6 font-mono overflow-x-hidden selection:bg-[#ccff00] selection:text-black relative">
       {/* Hyper-Acid Background */}
       <div className="fixed inset-0 -z-10">
         <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-[#ccff00]/5 rounded-full blur-[200px] animate-pulse"></div>
         <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-[#7b2cbf]/10 rounded-full blur-[150px]"></div>
       </div>
 
-      <div className="max-w-md w-full relative mx-auto">
+     <div className="max-w-md w-full relative mx-auto flex-shrink-0">
         {stage === "welcome" && (
           <div className="space-y-12 animate-in fade-in zoom-in duration-1000">
             <div className="relative bg-black border-[6px] border-[#ccff00] p-12 rounded-[4.5rem] shadow-[0_0_120px_rgba(204,255,0,0.15)] text-center space-y-10">
