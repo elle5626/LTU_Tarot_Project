@@ -10,7 +10,7 @@ const App = () => {
   const [imageUrl, setImageUrl] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [showContract, setShowContract] = useState(false);
- const apiKey = process.env.REACT_APP_GEMINI_KEY || ""; 
+  const apiKey = ""; 
 
   // --- 師資陣容 (陳高生主任核心) ---
   const facultyData = {
@@ -163,43 +163,11 @@ const App = () => {
     }
   };
 
- const generateImage = async (prompt) => {
+const generateImage = async (prompt) => {
   setIsLoading(true);
-  setImageUrl('');
-  let retries = 0;
-  const maxRetries = 3;
-  
-  const callApi = async () => {
-    try {
-      const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp-image-generation:generateContent?key=${apiKey}`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            contents: [{ parts: [{ text: prompt }] }],
-            generationConfig: { responseModalities: ["IMAGE", "TEXT"] }
-          })
-        }
-      );
-      const result = await response.json();
-      const parts = result.candidates?.[0]?.content?.parts;
-      const imgPart = parts?.find((p) => p.inlineData);
-      if (imgPart) {
-        setImageUrl(`data:image/png;base64,${imgPart.inlineData.data}`);
-      }
-    } catch (error) {
-      if (retries < maxRetries) {
-        retries++;
-        await new Promise(res => setTimeout(res, Math.pow(2, retries) * 1000));
-        return callApi();
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  };
-  
-  await callApi();
+  const keywords = encodeURIComponent(prompt.split(',')[0]);
+  setImageUrl(`https://source.unsplash.com/400x560/?${keywords}&sig=${Date.now()}`);
+  setIsLoading(false);
 };
    
   useEffect(() => {
