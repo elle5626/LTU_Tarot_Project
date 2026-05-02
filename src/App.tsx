@@ -165,8 +165,8 @@ const App = () => {
 
 const generateImage = async (prompt) => {
   setIsLoading(true);
-  const keywords = encodeURIComponent(prompt.split(',')[0]);
-  setImageUrl(`https://source.unsplash.com/400x560/?${keywords}&sig=${Date.now()}`);
+  const seed = encodeURIComponent(prompt.substring(0, 20));
+  setImageUrl(`https://picsum.photos/seed/${seed}/400/560`);
   setIsLoading(false);
 };
    
