@@ -27,7 +27,7 @@ const App = () => {
   const [imageUrl, setImageUrl] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showContract, setShowContract] = useState(false);
-  const apiKey = "";
+  const apiKey = process.env.REACT_APP_GOOGLE_API_KEY || "";
 
   const facultyData = {
     head: {
